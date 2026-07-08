@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>UUID Generator — Frantz DevTool Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#282a36;--bg2:#21222c;--surface:#44475a;--surface2:#383a4a;--text:#f8f8f2;--text2:#bd93f9;--muted:#6272a4;--accent:#bd93f9;--accent2:#ff79c6;--green:#50fa7b;--orange:#ffb86c;--red:#ff5555;--cyan:#8be9fd;--gold:#f1fa8c;--border:#44475a;--radius:10px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--surface);border-radius:3px}
+.app{max-width:780px;margin:0 auto;padding:54px 12px 30px}
+.top{position:fixed;top:0;left:0;right:0;height:44px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;z-index:100;gap:8px}
+.top .brand{font-weight:700;font-size:.75rem;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.top .brand span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top .links{margin-left:auto;display:flex;gap:4px}
+.top .links a{text-decoration:none;font-size:.5rem;padding:3px 7px;border-radius:4px;color:var(--muted)}
+.top .links a:hover{color:var(--text);background:var(--surface)}
+.tier{font-size:.5rem;padding:2px 8px;border-radius:8px;cursor:pointer;background:#50fa7b20;color:var(--green);font-weight:600}
+h1{font-size:1.1rem;color:var(--text2);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.sub{font-size:.65rem;color:var(--muted);margin-bottom:8px}
+.control-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.control-row label{font-size:.6rem;color:var(--muted)}
+.control-row select,.control-row input[type=number]{padding:4px 8px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.6rem;font-family:var(--font);min-width:60px}
+.control-row .btn{padding:5px 14px;border-radius:6px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);font-size:.6rem;font-weight:700;cursor:pointer;transition:all .2s}
+.control-row .btn:hover{opacity:.85}
+.control-row .btn-sec{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.55rem;cursor:pointer}
+.control-row .btn-sec:hover{border-color:var(--accent)}
+.output-area{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.output-area .hd{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface);font-size:.6rem;color:var(--muted);border-bottom:1px solid var(--border)}
+.output-area .hd .act{display:flex;gap:6px}
+.output-area .hd .act button{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:.55rem;transition:all .2s}
+.output-area .hd .act button:hover{border-color:var(--accent)}
+#outputContent{min-height:160px;padding:10px;font-family:var(--mono);font-size:.72rem;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--text);background:var(--bg);overflow:auto;max-height:400px}
+.option-tabs{display:flex;gap:2px;margin-bottom:8px}
+.opt-tab{padding:4px 10px;border-radius:5px 5px 0 0;font-size:.6rem;cursor:pointer;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-bottom:1px solid var(--border)}
+.opt-tab.active{background:var(--bg2);color:var(--text);border-bottom-color:var(--bg2);position:relative}
+.decoder-section{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:8px}
+.decoder-section.show{display:block}
+.decoder-section label{font-size:.6rem;color:var(--muted);display:block;margin-bottom:3px}
+.decoder-section input[type=text]{width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.65rem;font-family:var(--mono);margin-bottom:5px}
+.decoder-section .res{font-size:.7rem;padding:6px;border-radius:5px;background:var(--bg);color:var(--cyan);font-family:var(--mono)}
+.counter{font-size:.55rem;color:var(--muted)}
+.radio-group{display:flex;gap:10px;font-size:.6rem;align-items:center}
+.radio-group label{display:flex;align-items:center;gap:3px;cursor:pointer}
+footer{text-align:center;padding:14px;font-size:.55rem;color:var(--muted);border-top:1px solid var(--border);margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--accent)}
+@media(max-width:500px){.control-row{flex-direction:column;align-items:stretch}}
+</style>
+</head><body>
+<div class="top">
+<div class="brand">🔢 <span>UUID Generator</span></div>
+<div class="links">
+<a href="https://frantzenterprise.github.io/devtool-suite/">Hub</a>
+<a href="https://frantzenterprise.github.io/devtool-suite/pricing.html">Pricing</a>
+</div>
+<span class="tier" id="tierBadge" onclick="cycleTier()">🆓 Free</span>
+</div>
+<div class="app">
+<h1>🔢 UUID Generator</h1>
+<p class="sub">Generate, format, and decode UUIDs. All in your browser. Nothing leaves your machine.</p>
+
+<div class="option-tabs">
+<button class="opt-tab active" onclick="switchOpt('generate')">⚡ Generate</button>
+<button class="opt-tab" onclick="switchOpt('decode')">🔍 Decode</button>
+</div>
+
+<div id="genSection">
+<div class="control-row">
+<label>Count:</label>
+<input type="number" id="uuidCount" value="5" min="1" max="1000">
+<label>Version:</label>
+<select id="uuidVersion"><option value="4">v4 (Random)</option><option value="1">v1 (Time-based)</option><option value="7">v7 (Time-ordered)</option></select>
+<label>Format:</label>
+<select id="uuidFormat"><option value="standard">Standard (xxxxxxxx-xxxx-...)</option><option value="uppercase">UPPERCASE</option><option value="nohyphens">No hyphens</option><option value="braces">{braces}</option><option value="urn">URN (urn:uuid:...)</option><option value="base64">Base64 (22 chars)</option></select>
+<label>Separator:</label>
+<select id="uuidSep"><option value="\n">New line</option><option value=",">Comma</option><option value=" ">Space</option><option value="|">Pipe</option></select>
+</div>
+<div class="control-row" style="padding-top:0;border-top:none;margin-top:-4px">
+<button class="btn" onclick="generate()">⚡ Generate</button>
+<button class="btn-sec" onclick="document.getElementById('uuidCount').value=1;generate()">1</button>
+<button class="btn-sec" onclick="document.getElementById('uuidCount').value=10;generate()">10</button>
+<button class="btn-sec" onclick="document.getElementById('uuidCount').value=100;generate()">100</button>
+<button class="btn-sec" onclick="document.getElementById('uuidCount').value=1000;generate()">1000</button>
+</div>
+</div>
+
+<div class="decoder-section" id="decodeSection">
+<label>Paste a UUID to decode:</label>
+<input type="text" id="uuidInput" placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" spellcheck="false">
+<button class="btn" onclick="decodeUUID()" style="padding:4px 12px;font-size:.6rem;margin-bottom:6px">🔍 Decode</button>
+<div id="decodeResult" class="res" style="display:none"></div>
+</div>
+
+<div class="output-area">
+<div class="hd">
+<span>Output</span>
+<div class="act">
+<button onclick="copyOutput()" id="copyBtn">📋 Copy</button>
+<button onclick="downloadOutput()" id="dlBtn">⬇ Download</button>
+<button onclick="clearOutput()">✕ Clear</button>
+</div>
+</div>
+<div id="outputContent">Click ⚡ Generate to create UUIDs.</div>
+<div class="hd" style="border-top:1px solid var(--border);background:var(--bg)">
+<span class="counter" id="outCount">0 UUIDs</span>
+</div>
+</div>
+</div>
+
+<footer>
+<a href="https://frantzenterprise.github.io/devtool-suite/">Hub</a> ·
+<a href="https://frantzenterprise.github.io/devtool-suite/pricing.html">Pricing</a> ·
+<a href="https://frantzenterprise.github.io/devtool-suite/privacy.html">Privacy</a> ·
+<a href="https://frantzenterprise.github.io/devtool-suite/terms.html">Terms</a> ·
+⚡ Powered by Frantz Enterprise
+</footer>
+
+<script>
+let tier='free'
+
+function switchOpt(opt){
+document.querySelectorAll('.opt-tab').forEach((b,i)=>b.classList.toggle('active',['generate','decode'][i]===opt))
+document.getElementById('genSection').style.display=opt==='generate'?'block':'none'
+document.getElementById('decodeSection').classList.toggle('show',opt==='decode')
+}
+
+function generate(){
+const count=parseInt(document.getElementById('uuidCount').value)||1
+const version=document.getElementById('uuidVersion').value
+const format=document.getElementById('uuidFormat').value
+const sepRaw=document.getElementById('uuidSep').value
+const sep=sepRaw==='\\n'?'\n':sepRaw
+
+const limit=tier==='free'?10:tier==='pro'?100:1000
+const actual=Math.min(count,limit)
+if(actual<count){
+document.getElementById('outputContent').textContent=`⚠️ ${tier==='free'?'Free tier limited to 10 UUIDs. Upgrade to Pro for up to 100 or Team for 1000.':'Pro tier limited to 100. Team tier for 1000.'}`
+return
+}
+
+const uuids=[]
+for(let i=0;i<actual;i++){
+let uuid=''
+if(version==='4')uuid=v4()
+else if(version==='1')uuid=v1()
+else uuid=v7()
+uuids.push(formatUUID(uuid,format))
+}
+document.getElementById('outputContent').textContent=uuids.join(sep)
+document.getElementById('outCount').textContent=`${actual} UUID${actual!==1?'s':''}`
+}
+
+function v4(){
+return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)
+})
+}
+
+function v1(){
+const now=Date.now()
+const ticks=((now-12219292800000)*10000+0x01b21dd213814000)
+const timeHex=ticks.toString(16).padStart(12,'0')
+const clockSeq=(Math.random()*0x3fff|0).toString(16).padStart(4,'0')
+const node=(Math.random()*0xffffffffffff|0).toString(16).padStart(12,'0')
+return `${timeHex.slice(-8)}-${timeHex.slice(-12,-8)}-1${timeHex.slice(-13,-12)}-${(parseInt(clockSeq.slice(0,2),16)&0x3f|0x80).toString(16)}${clockSeq.slice(-2)}-${node}`
+}
+
+function v7(){
+const ts=Date.now().toString(16).padStart(12,'0')
+const rand='xxxxxxxxxxxx'.replace(/x/g,()=>(Math.random()*16|0).toString(16))
+const ver='7'
+const varHex=((Math.random()*16|0)&0x3|0x80).toString(16)
+return `${ts.slice(0,8)}-${ts.slice(8,12)}-${ver}${rand.slice(0,3)}-${varHex}${rand.slice(3,7)}-${rand.slice(7)}`
+}
+
+function formatUUID(uuid,fmt){
+if(fmt==='standard')return uuid
+if(fmt==='uppercase')return uuid.toUpperCase()
+if(fmt==='nohyphens')return uuid.replace(/-/g,'')
+if(fmt==='braces')return `{${uuid}}`
+if(fmt==='urn')return `urn:uuid:${uuid}`
+if(fmt==='base64'){
+const hex=uuid.replace(/-/g,'')
+const bytes=[]
+for(let i=0;i<hex.length;i+=2)bytes.push(parseInt(hex.substr(i,2),16))
+return btoa(String.fromCharCode(...bytes)).replace(/==$/,'').replace(/\+/g,'-').replace(/\//g,'_')
+}
+return uuid
+}
+
+function decodeUUID(){
+const inp=document.getElementById('uuidInput').value.trim()
+const res=document.getElementById('decodeResult')
+res.style.display='block'
+
+// Clean input
+let uuid=inp.replace(/^\{/,'').replace(/\}$/,'').replace(/^urn:uuid:/i,'').replace(/-/g,'')
+
+// Validate
+if(uuid.length!==32||!/^[0-9a-fA-F]+$/.test(uuid)){
+res.innerHTML='<span style="color:var(--red)">⚠️ Invalid UUID. Expected 32 hex characters (with or without hyphens, braces, URN).</span>'
+return
+}
+
+const parts={
+version:parseInt(uuid[12],16),
+variant:uuid[16]&0xf,
+timeLow:uuid.slice(0,8),
+timeMid:uuid.slice(8,12),
+timeHi:uuid.slice(12,16),
+node:uuid.slice(20),
+clockSeq:uuid.slice(16,20)
+}
+
+let html=''
+html+=`<div><span style="color:var(--muted)">Version:</span> v${parts.version} ${['?','Time-based (MAC)','?','?','Random','?','?','Time-ordered'][parts.version]||'?'}</div>`
+html+=`<div><span style="color:var(--muted)">Variant:</span> ${parts.variant} (${parts.variant>=8&&parts.variant<=11?'RFC 4122':'Other'})</div>`
+
+// Decode timestamp for v1 and v7
+if(parts.version===1){
+const tsHex=parts.timeHi.slice(1)+parts.timeMid+parts.timeLow
+const ts100ns=parseInt(tsHex,16)
+const unixMs=(ts100ns/10000)-12219292800000
+const d=new Date(unixMs)
+html+=`<div><span style="color:var(--muted)">Timestamp:</span> ${d.toUTCString()}${isNaN(d.getTime())?' (unable to parse)':''}</div>`
+html+=`<div><span style="color:var(--muted)">Clock seq:</span> ${parts.clockSeq}</div>`
+html+=`<div><span style="color:var(--muted)">Node (MAC):</span> ${parts.node.match(/.{2}/g).join(':')}</div>`
+}else if(parts.version===7){
+const tsHex=uuid.slice(0,12)
+const unixMs=parseInt(tsHex,16)
+const d=new Date(unixMs)
+html+=`<div><span style="color:var(--muted)">Timestamp:</span> ${d.toUTCString()}${isNaN(d.getTime())?' (unable to parse)':''}</div>`
+html+=`<div><span style="color:var(--muted)">Unix ms:</span> ${unixMs}</div>`
+}else if(parts.version===4){
+html+=`<div><span style="color:var(--muted)">Random UUID — no timestamp embedded.</span></div>`
+}
+
+res.innerHTML=html
+}
+
+function copyOutput(){
+const t=document.getElementById('outputContent').textContent
+if(!t||t==='Click ⚡ Generate to create UUIDs.')return
+navigator.clipboard.writeText(t).then(()=>{
+document.getElementById('copyBtn').textContent='✅ Copied!'
+setTimeout(()=>document.getElementById('copyBtn').textContent='📋 Copy',2000)
+})
+}
+
+function downloadOutput(){
+const t=document.getElementById('outputContent').textContent
+if(!t||t==='Click ⚡ Generate to create UUIDs.')return
+const blob=new Blob([t],{type:'text/plain'})
+const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='uuids.txt';a.click();URL.revokeObjectURL(url)
+}
+
+function clearOutput(){document.getElementById('outputContent').textContent='Click ⚡ Generate to create UUIDs.';document.getElementById('outCount').textContent='0 UUIDs'}
+
+function cycleTier(){
+const tiers=['free','pro','team'];const i=tiers.indexOf(tier);tier=tiers[(i+1)%3]
+const b=document.getElementById('tierBadge')
+const m={free:{t:'🆓 Free',c:'#50fa7b'},pro:{t:'⚡ Pro',c:'#ff79c6'},team:{t:'🏢 Team',c:'#ffb86c'}}
+b.textContent=m[tier].t;b.style.color=m[tier].c;b.style.background=m[tier].c+'20'
+}
+</script>
+</body></html>
